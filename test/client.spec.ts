@@ -68,7 +68,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -104,7 +104,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -119,7 +119,7 @@ describe('Metrical', () => {
     it('should include identification relations', async () => {
       const client = new Metrical({ writeKey: 'key', defaultTrackingConfig: { sessions: { enabled: false } } });
 
-      await client.identify({ user_id: 'user' });
+      await client.identify({ users: 'user' });
 
       await client.track({ event_name: 'Page Viewed' });
 
@@ -138,7 +138,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { user_id: 'user' } }],
+              relations: [{ object_slug: 'users', record_id: 'user' }],
             },
           ],
         }),
@@ -154,7 +154,7 @@ describe('Metrical', () => {
       const client = new Metrical({ writeKey: 'key', defaultTrackingConfig: { sessions: { enabled: false } } });
 
       await client.track({ event_name: 'Page Viewed' });
-      await client.identify({ user_id: 'user', lead_id: 'lead' });
+      await client.identify({ users: 'user', leads: 'lead' });
       await client.track({ event_name: 'Page Viewed' });
 
       expect(global.fetch).toHaveBeenNthCalledWith(1, 'https://eu.api.metrical.io/v1/ingestion/events', {
@@ -172,7 +172,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -212,7 +212,10 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { user_id: 'user' } }, { id: { lead_id: 'lead' } }],
+              relations: [
+                { object_slug: 'users', record_id: 'user' },
+                { object_slug: 'leads', record_id: 'lead' },
+              ],
             },
           ],
         }),
@@ -227,7 +230,7 @@ describe('Metrical', () => {
     it('should set cookie on top accessible domain by default', async () => {
       const client = new Metrical({ writeKey: 'key' });
 
-      await client.identify({ user_id: 'user' });
+      await client.identify({ users: 'user' });
 
       expect(document.cookie).toContain(IDENTIFICATION_KEY);
       // cookie is set on .com domain because in test environment it's permitted
@@ -242,7 +245,7 @@ describe('Metrical', () => {
         disableTrackingByDefault: true,
       });
 
-      await client.identify({ user_id: 'user' });
+      await client.identify({ users: 'user' });
 
       expect(global.fetch).not.toHaveBeenCalled();
     });
@@ -304,7 +307,7 @@ describe('Metrical', () => {
                 $utm_campaign: 'campaign',
                 $gclid: 'id',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -345,7 +348,7 @@ describe('Metrical', () => {
                 $gclid: 'id',
                 my_prop: 'prop_value',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -386,7 +389,7 @@ describe('Metrical', () => {
                 $path: '/path/index.html',
                 $query: '?foo=bar&utm_campaign=campaign&gclid=id',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -422,7 +425,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
               track_ip_and_geolocation: false,
             },
           ],
@@ -486,9 +489,10 @@ describe('Metrical', () => {
                 $gclid: 'id',
               },
               relations: [
-                { id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } },
+                { object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' },
                 {
-                  id: { session_id: sessionId },
+                  object_slug: 'sessions',
+                  record_id: sessionId,
                   set_once: {
                     $start_event: 'Page View',
                     $start_location: 'https://domain.com/path/index.html?foo=bar&utm_campaign=campaign&gclid=id',
@@ -536,7 +540,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -563,7 +567,7 @@ describe('Metrical', () => {
                 $browser: 'Google Chrome',
                 $browser_version: '124.0',
               },
-              relations: [{ id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } }],
+              relations: [{ object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' }],
             },
           ],
         }),
@@ -590,9 +594,10 @@ describe('Metrical', () => {
                 $browser_version: '124.0',
               },
               relations: [
-                { id: { anonymous_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' } },
+                { object_slug: 'anonymous', record_id: 'f3f7e6b2-0074-457b-9197-6eae16aedf13' },
                 {
-                  id: { session_id: sessionId },
+                  object_slug: 'sessions',
+                  record_id: sessionId,
                   set_once: {},
                   set: {
                     $session_start: '2024-01-01T00:00:00.000Z',
@@ -630,7 +635,7 @@ describe('Metrical', () => {
       const records = [
         {
           id: 'd63506b4-cea0-4fde-9a0e-cb2edee48929',
-          workspace_object_id: 'user',
+          slug: 'user',
           properties: {
             set: {
               name: 'user',
@@ -642,7 +647,7 @@ describe('Metrical', () => {
         },
         {
           id: 'a1514d79-845e-4e6e-947a-d5151f5ec93c',
-          workspace_object_id: 'account',
+          slug: 'account',
           properties: {
             set: {
               title: 'account',

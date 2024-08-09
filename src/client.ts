@@ -106,7 +106,8 @@ export class Metrical {
           ...(sessionInfo.shouldTrack && this.isInSessionScope(event, this.config.defaultTrackingConfig.sessions)
             ? [
                 {
-                  id: { session_id: this.session.id },
+                  object_slug: 'sessions',
+                  record_id: this.session.id,
                   set_once: { ...initialSessionProperties },
                   set: { ...sessionProperties },
                 },
@@ -164,9 +165,9 @@ export class Metrical {
       return agg;
     }, this.identification || {});
 
-    await this.identifyCallout(this.identification.anonymous_id, this.identification.user_id, config);
+    await this.identifyCallout(this.identification.anonymous, this.identification.users, config);
 
-    delete this.identification.anonymous_id;
+    delete this.identification.anonymous;
 
     this.persistentStorage.saveIdentification(this.identification);
   }
@@ -342,14 +343,17 @@ export class Metrical {
   private getIdentificationRelations(): Relation[] {
     if (!this.identification) {
       this.identification = {
-        anonymous_id: uuid(),
+        anonymous: uuid(),
       };
 
       this.persistentStorage.saveIdentification(this.identification);
     }
 
     return Object.entries(this.identification).map(([key, value]) => {
-      return { id: { [key]: value } };
+      return {
+        object_slug: key,
+        record_id: value,
+      };
     });
   }
 
@@ -440,7 +444,7 @@ export class Metrical {
       async (formId: string, formData: Record<string, string>) =>
         await this.trackWithPageContext(currentPageContext(), {
           event_name: 'Form Submitted',
-          properties:  { $form_data: formData, $form_id: formId },
+          properties: { $form_data: formData, $form_id: formId },
         }),
     ).init();
   }

@@ -143,9 +143,9 @@ client.track({ event_name: 'My Custom Unique Event', properties: { my_property: 
 
 A session is a series of events that capture a single use of your product or a visit to your website. Analyzing sessions allows you to understand user behavior, including entry and exit points, duration of visits, activity, bounce rates, and more.
 
-Metrical automatically computes sessions based on the events you send. This means you don't need to implement any special tracking. Our SDK adds a `session_id` to each event and manage sessions automatically.
+Metrical automatically computes sessions based on the events you send. This means you don't need to implement any special tracking. Our SDK adds a session identifier to each event and manage sessions automatically.
 
-Events from the same user, browser, and device share the same `session_id` until there is no activity for more than 30 minutes, after which subsequent events are grouped into a new session. A session can include multiple tabs and windows, as long as they are in the same browser and on the same device. For example, moving from one Tab to another counts as a single session, but switching from one Browser to another starts a new session. You can also create a new session manually by calling `client.reset()`.
+Events from the same user, browser, and device share the same session until there is no activity for more than 30 minutes, after which subsequent events are grouped into a new session. A session can include multiple tabs and windows, as long as they are in the same browser and on the same device. For example, moving from one Tab to another counts as a single session, but switching from one Browser to another starts a new session. You can also create a new session manually by calling `client.reset()`.
 
 Events with the `created_at` property manually set are not included in sessions. Additionally, you can exclude certain events (e.g., actions triggered automatically on behalf of the user) from session calculations, as shown below:
 
@@ -162,7 +162,7 @@ const client = new Metrical({ writeKey: '<write key>', defaultTrackingConfig: { 
 ### Manage relations
 Metrical automatically manages relationships between anonymous and identified users during tracking. However, if your events are related to other workspace objects, you should explicitly define these relationships for each event via `relations`, as shown below:
 ```html
-client.track({ event_name: 'My Custom Event', properties: { my_property: 'property_value' }, relations: [{ id: { invoice_id: '63f2164c-2000-4f6c-b377-107368566222'}}]});
+client.track({ event_name: 'My Custom Event', properties: { my_property: 'property_value' }, relations: [{ object_slug: 'invoice', record_id: '63f2164c-2000-4f6c-b377-107368566222' }] });
 ```
 
 ### Set related record properties
@@ -171,7 +171,7 @@ If a certain event is supposed to change related record properties, you can easi
 ```html
 // `set` - sets the value if it was never set before, or overrides the latest value if one exists.
 // `set_once` - sets the value if it was never set before or ignores it otherwise.
-client.track({ event_name: 'My Custom Event', properties: { my_property: 'property_value' }, relations: [{ id: { invoice_id: '63f2164c-2000-4f6c-b377-107368566222' }, set: { 'coupon': 'PROMO10' }, set_once: { 'invoice_no': 'IN001' }}]});
+client.track({ event_name: 'My Custom Event', properties: { my_property: 'property_value' }, relations: [{ object_slug: 'invoice', record_id: '63f2164c-2000-4f6c-b377-107368566222', set: { 'coupon': 'PROMO10' }, set_once: { 'invoice_no': 'IN001' }}]});
 ```
 
 ### Exclude bot traffic
@@ -195,15 +195,15 @@ You can manage user identity through the `client.identify()` and `client.reset()
 You can identify a user with a unique ID to monitor their activity across devices and associate them with their events. Once you have the current user's identity, you should call `identify()` as shown below, typically after they log in or sign up:
 
 ```html
-client.identify({ user_id: '<user id>' });
+client.identify({ users: '<user id>' });
 ```
 
 ### Get identifier
 Identifiers provided via `client.identify()` are persisted and can be accessed later using `client.getIdentifier()`, as shown below:
 
 ```html
-client.identify({ invoice_id: '<invoice id>' });
-client.getIdentifier('invoice_id'); // returns <invoice id>
+client.identify({ invoices: '<invoice id>' });
+client.getIdentifier('invoices'); // returns <invoice id>
 ```
 
 ### Reset
@@ -220,7 +220,7 @@ Related record properties could be set when tracking, [as described here](#set-r
 client.setRecordProperties([
 {
   id: 'd63506b4-cea0-4fde-9a0e-cb2edee48929',
-  workspace_object_id: 'user',
+  slug: 'users',
   properties: {
     set: {
       name: 'user',
@@ -231,8 +231,8 @@ client.setRecordProperties([
   },
 },
 {
-  id: client.getIdentifier('account_id'),
-  workspace_object_id: 'account',
+  id: client.getIdentifier('accounts'),
+  slug: 'accounts',
   properties: {
     set: {
       title: 'account',
